@@ -2,18 +2,11 @@ import { EventEmitter } from 'events'
 import type firebase from 'firebase'
 import type firebaseAdm from 'firebase-admin'
 
-type RequestsEvent = `${'request'
-  | 'settled'
-  | 'request:from'
-  | 'request:to'
-  }${`#${string}` | ''}`
-
 type DataSnapshot = firebase.database.DataSnapshot | firebaseAdm.database.DataSnapshot
 type Database = firebase.database.Database | firebaseAdm.database.Database
 
 export interface Requests {
-  on(event: RequestsEvent, listener: (reqSnap: DataSnapshot) => any): this;
-  emit(event: RequestsEvent, ...args: any[]): boolean;
+  on(event: string, listener: (reqSnap: DataSnapshot) => any): this;
 }
 
 export class Requests extends EventEmitter {
