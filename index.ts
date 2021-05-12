@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events'
 import type firebase from 'firebase'
+import type firebaseAdm from 'firebase-admin'
 
 type RequestsEvent = `${'request'
   | 'settled'
@@ -7,8 +8,8 @@ type RequestsEvent = `${'request'
   | 'request:to'
   }${`#${string}` | ''}`
 
-type DataSnapshot = firebase.database.DataSnapshot
-type Database = firebase.database.Database
+type DataSnapshot = firebase.database.DataSnapshot | firebaseAdm.database.DataSnapshot
+type Database = firebase.database.Database | firebaseAdm.database.Database
 
 export interface Requests {
   on(event: RequestsEvent, listener: (reqSnap: DataSnapshot) => any): this;

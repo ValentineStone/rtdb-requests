@@ -22,7 +22,8 @@
     "url": "https://github.com/ValentineStone/rtdb-requests/issues"
   },
   "homepage": "https://github.com/ValentineStone/rtdb-requests#readme",
-  "peerDependencies": {
-    "firebase": "^8.6.0"
+  "optionalDependencies": {
+    "firebase": "^8.6.0",
+    "firebase-admin": "^9.8.0"
   }
 }
