@@ -50,6 +50,7 @@ export class Requests extends EventEmitter {
             this.emit(`request#${reqKey}`, reqSnap, settle)
             this.emit(`request`, reqSnap, settle)
           }
+          this.emit(reqKey, reqVal)
         }
         else {
           this.#reqUnsubs[reqKey]?.()
@@ -77,11 +78,17 @@ export class Requests extends EventEmitter {
     }
     return this.unmount
   }
-  send = async (
+  update = async (reqKey: string, req: { [key: string]: any }) => {
+    await this.#database.ref(`/requests/${reqKey}`).update(req)
+  }
+  send(to: string, req: { [key: string]: any }): Promise<string>;
+  send(to: string, req: { [key: string]: any },
+    onValue?: (reqSnap: DataSnapshot) => any): Promise<() => any>;
+  async send(
     to: string,
     req: { [key: string]: any },
     onValue?: (reqSnap: DataSnapshot) => any
-  ) => {
+  ): Promise<string | (() => any)> {
     if (!this.mounted)
       throw new Error('Can not send firebase request, Requests is not mounted')
     const from = this.#uuid
@@ -91,9 +98,16 @@ export class Requests extends EventEmitter {
     if (onValue) this.on(`request:from#${reqKey}`, onValue)
     await this.#database.ref(`/requests/from/${from}/${reqKey}`).set(true)
     await this.#database.ref(`/requests/to/${to}/${reqKey}`).set(true)
-    if (onValue) return () => this.off(`request:from#${reqKey}`, onValue)
+    if (onValue)
+      return () => this.off(`request:from#${reqKey}`, onValue)
+    else
+      return reqKey
   }
-  
+  constructor() {
+    super()
+    this.send = this.send.bind(this)
+  }
+
   #unmountNotMounted = () => {
     throw new Error('Can not unmount Requests, not mounted')
   }

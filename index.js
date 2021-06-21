@@ -27,7 +27,7 @@ exports.Requests = void 0;
 const events_1 = require("events");
 class Requests extends events_1.EventEmitter {
     constructor() {
-        super(...arguments);
+        super();
         _reqUnsubs.set(this, {});
         _uuid.set(this, null);
         _database.set(this, null);
@@ -65,6 +65,7 @@ class Requests extends events_1.EventEmitter {
                             this.emit(`request#${reqKey}`, reqSnap, settle);
                             this.emit(`request`, reqSnap, settle);
                         }
+                        this.emit(reqKey, reqVal);
                     }
                     else {
                         (_b = (_a = __classPrivateFieldGet(this, _reqUnsubs))[reqKey]) === null || _b === void 0 ? void 0 : _b.call(_a);
@@ -93,7 +94,17 @@ class Requests extends events_1.EventEmitter {
             };
             return this.unmount;
         };
-        this.send = (to, req, onValue) => __awaiter(this, void 0, void 0, function* () {
+        this.update = (reqKey, req) => __awaiter(this, void 0, void 0, function* () {
+            yield __classPrivateFieldGet(this, _database).ref(`/requests/${reqKey}`).update(req);
+        });
+        _unmountNotMounted.set(this, () => {
+            throw new Error('Can not unmount Requests, not mounted');
+        });
+        this.unmount = __classPrivateFieldGet(this, _unmountNotMounted);
+        this.send = this.send.bind(this);
+    }
+    send(to, req, onValue) {
+        return __awaiter(this, void 0, void 0, function* () {
             if (!this.mounted)
                 throw new Error('Can not send firebase request, Requests is not mounted');
             const from = __classPrivateFieldGet(this, _uuid);
@@ -106,11 +117,9 @@ class Requests extends events_1.EventEmitter {
             yield __classPrivateFieldGet(this, _database).ref(`/requests/to/${to}/${reqKey}`).set(true);
             if (onValue)
                 return () => this.off(`request:from#${reqKey}`, onValue);
+            else
+                return reqKey;
         });
-        _unmountNotMounted.set(this, () => {
-            throw new Error('Can not unmount Requests, not mounted');
-        });
-        this.unmount = __classPrivateFieldGet(this, _unmountNotMounted);
     }
     get mounted() {
         return this.unmount !== __classPrivateFieldGet(this, _unmountNotMounted);

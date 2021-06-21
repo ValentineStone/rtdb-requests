@@ -10,9 +10,16 @@ export interface Requests {
 export declare class Requests extends EventEmitter {
     #private;
     mount: (database?: Database, uuid?: string) => () => any;
-    send: (to: string, req: {
+    update: (reqKey: string, req: {
         [key: string]: any;
-    }, onValue?: (reqSnap: DataSnapshot) => any) => Promise<() => this>;
+    }) => Promise<void>;
+    send(to: string, req: {
+        [key: string]: any;
+    }): Promise<string>;
+    send(to: string, req: {
+        [key: string]: any;
+    }, onValue?: (reqSnap: DataSnapshot) => any): Promise<() => any>;
+    constructor();
     unmount: () => any;
     get mounted(): boolean;
 }
