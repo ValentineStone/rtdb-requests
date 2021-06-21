@@ -1,6 +1,6 @@
 {
   "name": "@valentine-stone/rtdb-requests",
-  "version": "0.0.3",
+  "version": "0.0.7",
   "description": "Firebase Realtime Database in-database request-response type communication",
   "main": "index.js",
   "repository": {

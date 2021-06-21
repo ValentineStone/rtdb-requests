@@ -86,7 +86,7 @@ export class Requests extends EventEmitter {
       throw new Error('Can not send firebase request, Requests is not mounted')
     const from = this.#uuid
     const reqRef = await this.#database.ref(`/requests`)
-      .push({ from, to, ...req })
+      .push({ ...req, from, to })
     const reqKey = reqRef.key
     if (onValue) this.on(`request:from#${reqKey}`, onValue)
     await this.#database.ref(`/requests/from/${from}/${reqKey}`).set(true)
@@ -99,6 +99,6 @@ export class Requests extends EventEmitter {
   }
   unmount: () => any = this.#unmountNotMounted
   get mounted() {
-    return this.unmount === this.#unmountNotMounted
+    return this.unmount !== this.#unmountNotMounted
   }
 }
